@@ -1,5 +1,5 @@
 { catppuccinLib }:
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (config.catppuccin) sources;
@@ -17,10 +17,9 @@ in
   config = lib.mkIf enable {
     programs.atuin = {
       settings.theme.name = themeName;
-    };
-
-    xdg.configFile = {
-      "atuin/themes/${themeName}.toml".source = "${sources.atuin}/${cfg.flavor}/${themeName}.toml";
+      themes.${themeName} = pkgs.runCommandLocal "${themeName}.toml" { } ''
+        cp "${sources.atuin}/${cfg.flavor}/${themeName}.toml" "$out"
+      '';
     };
   };
 }
